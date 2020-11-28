@@ -11,9 +11,9 @@ resource "aws_vpc" "ec2-vpc" {
 // subnet
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet
 resource "aws_subnet" "ec2-vpc-sn" {
-  cidr_block        = cidrsubnet(aws_vpc.ec2-vpc.cidr_block, 3, 1) # 10.0.32.0/19
+  cidr_block        = cidrsubnet(aws_vpc.ec2-vpc.cidr_block, 3, 1) // 10.0.32.0/19
   vpc_id            = aws_vpc.ec2-vpc.id                           // attach subnet to above vpc
-  availability_zone = "value"
+  availability_zone = var.subnet_availability_zone
   tags              = var.default_tags
 }
 
@@ -80,3 +80,14 @@ resource "aws_route_table_association" "ec2-rt-association" {
 
 
 // create the EC2
+// https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance
+resource "aws_instance" "ec2-main" {
+  ami             = var.ami_id
+  instance_type   = var.ec2_instance_type
+  key_name        = var.pem_key_name
+  security_groups = [aws_security_group.ec2-vpc-sg.id]
+
+  subnet_id = aws_subnet.ec2-vpc-sn.id
+
+  tags = var.default_tags
+}

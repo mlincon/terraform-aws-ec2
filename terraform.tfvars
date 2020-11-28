@@ -18,3 +18,14 @@ default_tags = {
   Name : "EC2-SSH",
   project : "EC2-SSH"
 }
+
+# VPC
+vpc_cidr_block = "10.0.0.0/16"
+// http://jodies.de/ipcalc?host=10.0.0.0&mask1=16&mask2=
+// 10.0.0.1 - 10.0.255.254
+// (2^[32-16]) - 2 = 65,536 available IP addresses
+
+
+# subnet
+subnet_availability_zone = "eu-central-1a"
+

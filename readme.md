@@ -1,3 +1,7 @@
+### Diagram
+
+![diagram](image/diagram.png)
+
 ### VPC
 
 In general, AWS creates a default VPC for each AWS region when the account is created.
@@ -31,6 +35,9 @@ More: [DNS support in your VPC](https://docs.aws.amazon.com/vpc/latest/userguide
 
 
 ### Security Group
+
+Security groups manage traffic at the server level (the resource level).
+Security Groups are not for managing higher level groups such as subnets, VPC, or user accounts.  
 
 For SSH connection, set the ports at `22` and `TCP` as protocol.  
 For HTTP connection, set the ports at `80` and `TCP` as protocol.  

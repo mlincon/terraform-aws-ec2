@@ -87,7 +87,7 @@ resource "aws_instance" "ec2-main" {
   key_name                    = var.pem_key_name
   security_groups             = [aws_security_group.ec2-vpc-sg.id]
   subnet_id                   = aws_subnet.ec2-vpc-sn.id
-  associate_public_ip_address = true
+  associate_public_ip_address = true // required for assigning public ip
   tags                        = var.default_tags
 }
 

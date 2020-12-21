@@ -2,6 +2,20 @@
 
 ![diagram](image/diagram.png)
 
+### Steps
+1. Create a provider for AWS
+2. Create an AWS key pair or use an existing one for SSH access
+3. Create a VPC
+4. Create a public subnet with auto public IP assignment enabled
+    - it will have a Route Table that directs traffic to an Internet Gateway allowing access to and from the Internet
+    - note: if a private subnet is required that can access the Internet but outside world will not be able to connect to the instance inside the subnet, use a NAT Gateway 
+5. Create an Internet Gateway for instances in the public subnet to access the internet
+6. Create a routing table consisting of the information of Internet Gateway
+7. Associate the routing table to the public subnet to provide the Internet Gateway address
+8. Create a Security Group for the EC2 instance, so that it is possible to access it by SSH
+9. Create an EC2 instance
+10. Create an Elastic IP
+
 ### VPC
 
 In general, AWS creates a default VPC for each AWS region when the account is created.
@@ -11,7 +25,7 @@ In general, AWS creates a default VPC for each AWS region when the account is cr
 Instance in a VPC are provided with public and private DNS hostmnames that correspond to the public IPv4 and private IPv4 addresses for the instance.
 
 - __Private DNS hostnames__: 
-    - resolves to the private PIv4 address of the instance
+    - resolves to the private IPv4 address of the instance
     - can be used for communication between instances in the same network, but not outside the network that the instance is in
     - form: `ip-private-ipv4-address.ec2.internal` for the `us-east-1` region and  `ip-private-ipv4-address.region.compute.internal` for other regions
 - __Public DNS hostnames__: 

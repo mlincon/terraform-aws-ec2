@@ -1,3 +1,4 @@
+// 1. create a provide for AWS
 provider "aws" {
   region  = var.region
   profile = var.profile

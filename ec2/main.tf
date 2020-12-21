@@ -1,19 +1,31 @@
 // vpc
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc
 resource "aws_vpc" "ec2-vpc" {
+  // IP range for the VPC
   cidr_block           = var.vpc_cidr_block
+
+  // instances with a public IP address receive corresponding public DNS hostnames
   enable_dns_hostnames = true
   enable_dns_support   = true
+
   tags                 = var.default_tags
 }
 
 
-// subnet
+// subnet (public)
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet
 resource "aws_subnet" "ec2-vpc-sn" {
+  // IP range for the public subnet
   cidr_block        = cidrsubnet(aws_vpc.ec2-vpc.cidr_block, 3, 1) // 10.0.32.0/19
-  vpc_id            = aws_vpc.ec2-vpc.id                           // attach subnet to above vpc
+
+  // VPC in whichc the subnet has to be created
+  vpc_id            = aws_vpc.ec2-vpc.id
+
+  // instances launched into the subnet should be assigned a public IP address
+  map_public_ip_on_launch = true
+
   availability_zone = var.subnet_availability_zone
+  depends_on        = aws_vpc.ec2-vpc
   tags              = var.default_tags
 }
 
@@ -23,8 +35,10 @@ resource "aws_subnet" "ec2-vpc-sn" {
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group
 resource "aws_security_group" "ec2-vpc-sg" {
   name   = "allow-all-sg"
-  vpc_id = aws_vpc.ec2-vpc.id // attach sg to above vpc
 
+  // VPC in which the security group is created
+  vpc_id = aws_vpc.ec2-vpc.id 
+  
   // inbound rules #1: SSH
   ingress {
     cidr_blocks = ["0.0.0.0/0"] // use to specify the source, here allow all
@@ -49,7 +63,9 @@ resource "aws_security_group" "ec2-vpc-sg" {
 // - allows external users to communicate with parts of the VPC
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/internet_gateway
 resource "aws_internet_gateway" "ec2-vpc-igw" {
+  // VPC in which the security group will be created
   vpc_id = aws_vpc.ec2-vpc.id
+
   tags   = var.default_tags
 }
 
@@ -87,7 +103,10 @@ resource "aws_instance" "ec2-main" {
   key_name                    = var.pem_key_name
   security_groups             = [aws_security_group.ec2-vpc-sg.id]
   subnet_id                   = aws_subnet.ec2-vpc-sn.id
-  associate_public_ip_address = true // required for assigning public ip
+
+  // associate a public ip address with an instance in a VPC
+  associate_public_ip_address = true 
+
   tags                        = var.default_tags
 }
 
